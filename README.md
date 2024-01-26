@@ -1336,3 +1336,118 @@ public static void main( String[] args )    {
 ```
 
 <p>Through the command line: --spring.profiles.active=dev</p>
+
+<h4>Spring Logging</h4>
+<p>During the execution of an application, several events are triggered at different points while the user interacts with the application and a record of all those events need to be kept.</p>
+<p>This can help the administrator and the programmer to diagnose, debug and maintain the application.</p>
+<p>The process of writing log messages to a central location during the execution of the program, thus tracking every step in the execution of a program including any event or exception along with their relevant details, is called Logging.</p>
+<p>There are multiple reasons to log the application activity. We can record unusual circumstances or errors that may be happening in the program as well as information about the application’s execution. Having these records helps in quick problem diagnosis, debugging, and maintenance of the application.</p>
+<p>We need logging frameworks to log the events and messages in any application.</p>
+<ul>
+	<li>It allows you to configure logging level. Logging levels are basically used to differentiate the logs according to their severity. Some examples of logging level are Info, Warn and Error. </li>
+	<li>It also allows you to set the destination of the logs according to your requirement. Suppose you want to store it in a file or a database. It allows you to do that.</li>
+</ul>
+<p>There are several logging frameworks to make logging easier. Some of the popular ones are:</p>
+<ul>
+	<li>JDK Logging API</li>
+	<li>Apache Log4j</li>
+	<li>Commons Logging API</li>
+</ul>
+<p>Spring Boot uses Apache Commons Logging for logging. It provides default configurations for using Java Util Logging, Log4j2, and Logback as logging implementation. If Spring Boot starters are used then Logback is used for logging by default.</p>
+<li>We can  customize the default logging configurations of Spring Boot or use other logging frameworks of our choice as well.</li>
+<h1>Logging Levels in HTML Terms</h1>
+<div class="log-level trace">
+	<strong>ALL:</strong> For all the levels (required for user defined levels)
+</div>
+<div class="log-level trace">
+	<strong>TRACE:</strong> The most detailed level. Used for fine-grained debugging information.
+</div>
+<div class="log-level debug">
+    <strong>DEBUG:</strong> Used for debugging information.
+</div>
+<div class="log-level info">
+    <strong>INFO:</strong> Used to provide informational messages.
+</div>
+<div class="log-level warn">
+    <strong>WARN:</strong> Used for potentially harmful situations.
+</div>
+<div class="log-level error">
+    <strong>ERROR:</strong> Used for error messages.
+</div>
+<div class="log-level fatal">
+    <strong>FATAL:</strong> Rarely used, signifies a very severe error that will lead the application to abort.
+</div>
+<div class="log-level fatal">
+    <strong>OFF:</strong> To disable all the levels
+</div>
+
+<p>As we have seen before, Spring Boot uses Logback as its default logging framework.</p>
+<p>Generally, all ‘spring-boot-starter’ dependencies make use of Apache Commons Logging library to implicitly add some logging framework jars such as Java Util Logging, Logback , Log4J in the applications.</p>
+<p>let us learn about Logback and some of its configurations.</p>
+<p>Logging levels, Logging format, and Log file location can be easily configured according to the requirement in “application.properties” file. </p>
+
+<h6>Configuring logging levels</h6>
+<p>Spring Boot by default, logs messages at ERROR, WARN, and INFO levels. Logging levels can easily be configured just by setting up the following property in application.properties file.</p>
+<p>logging.level.com.infy=INFO </p>
+<p>Here logging level is set as Info (highlights the progress of an application) for classes of com.infy package.</p>
+<p>So, Up to INFO, It Will log</p>
+
+<h6>Configuring logging pattern</h6>
+<p>You can change the logging pattern for console by setting logging.pattern.console property in application.properties file.</p>
+
+```properties
+logging.pattern.console=%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n
+```
+<p>To change the logging pattern for file, set the logging.pattern.file property in application.properties file.</p>
+
+<p>Suppose you want to log a message in error log file in this format.</p>
+
+<p>Then you can set the property like this</p>
+
+```properties
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+```
+
+<p>Configuring logging file</p>
+<p>By default, Spring Boot logs only to the console and does not log to files. If you want to log messages in files in addition to the console, you need to set logging.file property in application.properties file. The value for this property can be exact location of file or relative to the current directory. For example, to log messages in error.log file you can set logging.file.name property as follows:</p>
+
+```properties
+logging.file.name = Error.log
+```
+
+<p>You can also set the location of the log file by setting logging.file.path property in application.properties file.</p>
+
+```properties
+logging.file.path=logs/Error.log
+```
+
+<p>To have more more control over logging, you can use the logging provider specific configuration file in their default locations, which Spring Boot will automatically use.</p>
+
+<p>We have that Logback is used as the default logging framework by spring boot.</p>
+
+<p>In order to use Log4J, first you have to exclude the default logging dependency which is  ‘spring-boot-starter-logging’  and then include ‘spring-boot-starter-log4j2’ starter in pom.xml file.</p>
+
+```xml
+	<!-- Exclude Spring Boot's Default Logging -->
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+	</dependency>
+	<!-- Add Log4j2 Dependency -->
+	<dependency>
+
+```
+
+<p>Log4j also allows you to log the information at different places which can be either file, console, database etc.</p>
+
+<p>For configuration of Log4j, add log4j.properties file to the root class path of the application so that spring boot automatically recognize it and can use it for logging.</p>	
+
+<p>Once configuration is done you can use the Log4J logger in the application. To log information, you first need to get a logger object.</p>
+<p>his logger object is obtained by invoking getLogger() method of the org.apache.logging.log4j.LogManager class.</p>
+<p>This method takes the details of the class in which you want to log as a parameter and gives an object of org.apache.logging.log4j.Logger interface.</p>
