@@ -797,3 +797,542 @@ public class LifecycleCallbacksExample {
 ```
 
 <p>Lifecycle callbacks are useful for performing tasks such as resource allocation, connection establishment, or cleanup operations during the lifecycle of Spring beans. Choose the approach that best fits your needs and coding style when working with Spring beans.</p>
+
+
+
+<h4>Spring Aspect Oriented Programming (AOP) </h4>
+
+<p>Spring AOP (Aspect-Oriented Programming) is a framework provided by the Spring framework that enables developers to seperate and modularize cross-cutting concerns in their applications code.</p>
+
+<h6>Cross Cutting Concerns : </h6>
+<p>Imagine you're building a big software project, and there are certain things that need to happen across different parts of your code. These things are not directly related to what each part of your code , they're more like common background tasks that multiple parts of your code need to handle. Examples could be logging, security checks, or error handling.</p>
+<p>These are called cross cutting concerns</p>
+<p>Now, in regular programming, you would have to write this code throughout your code, making it a bit messy and harder to understand.</p>
+<p>To Handle this issue, AOP helps you keep these background tasks separate from your main code, making everything cleaner and more organized.</p>
+<p>Simply, when we are writing code for an application, some code will common for some classes, which is nt directly depedent on individual class logics, but those are tightly coupled with that classes. It looks bit messy, so we will try to separate those common code and make it to run automatically with resepct to that classes.</p>	
+<p>These way of programming is called aspect oriented programming</p>
+
+<h5>Key concepts of AOP</h5>
+<h6>Aspect</h6>
+<p>Aspect is a class that implements the cross-cutting concerns</p>
+<p>To declare a class as an aspect it should be annotated with the @Aspect annotation</p>
+<p>It should be applied to the class which is annotated with @Component annotation or with derivatives of it.</p>
+<h6>Joint Point</h6>
+<p>Join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc during its execution. </p>
+<p>It is basically defines when the common code should be executed</p>
+<p>In Spring AOP a join point is always the execution of a method.</p>
+<h6>Advice</h6>
+<p>Advice is a method of the aspect class that provides the implementation for the cross-cutting concern.</p>
+<p>It gets executed at the selected join point(s)</p>
+<p>There are different types of advices in spring aop</p>
+<ul>
+	<li><strong>Before : </strong> The advice gets executed before the join-point.</li>
+	<li><strong>After Returning : </strong> The advice gets executed after the execution of the join-point finishes.</li>
+	<li><strong>After Throwing : </strong> The advice gets executed if any exception is thrown from the join-point.</li>
+	<li><strong>After : </strong> The advice gets executed after the execution of the join-point whether it throws an exception or not.</li>
+	<li><strong>Around : </strong> The advice gets executed around the join-point, which means that it is invoked before the join-point and after the execution of the join-point.</li>
+</ul>
+
+<h6>PointCut</h6>
+<p>Pointcut represents an expression used to identify in which places advices should be associated</p>
+<p>It is used to determine exactly for which methods of Spring beans advice needs to be applied.</p>
+<p> It has the following syntax:</p>
+
+```java
+execution(<modifiers> <return-type> <fully qualified class name>.<method-name>(parameters))
+```
+
+<p>execution : It is called as pointcut designator, It tells spring that joint point is execution of matching method</p>
+<p><modifiers> : It determines the access specifier of matching method.It could either be public, protected, or private. It is not mandatory. </p>
+<p><return-type> : It determines the return type of the method in order for a join point to be matched. It is mandatory. If the return type doesn't matter wildcard * is used.</p>
+<p><fully qualified class name> :  specifies the fully qualified name of the class which has methods on the execution of which advice gets executed. It is optional. You can also use * wildcard as name or part of a name.</p>
+<p><method-name> specifies the name of the method on the execution of which advice gets executed. It is mandatory. You can also use * wildcard as name or part of a name.</p>
+<p>parameters are used for matching parameters. To skip parameter filtering, use two dots .. as parameters.</p>
+<table summary="This table shows different pointcuts and their corresponding description">
+	<thead>
+		<tr>
+			<th style="null">
+				<span style="null">Pointcut</span>
+			</th>
+			<th style="null"><
+				<span style="null">Description</span>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>execution(public * *(..))</td>
+			<td>execution of any public method</td>
+		</tr>
+		<tr>
+			<td>execution(* service*(..))</td>
+			<td>execution of any method with a name beginning with “service”</td>
+		</tr>
+		<tr>
+			<td>execution(* com.infy.service.*.*(..))</td>
+			<td>execution of any method defined in the com.infy.service package</td>
+		</tr>
+		<tr>
+			<td>execution(* com.infy.service.CustomerServiceImpl.*(..))</td>
+			<td>execution of any method defined in CustomerServiceImpl of com.infy.service package</td>
+		</tr>
+		<tr>
+			<td>execution(public * com.infy.repository.CustomerRepository.*(..)) &nbsp;&nbsp;</td>
+			<td>execution of any public method in CustomerRepository of com.infy.repository package</td>
+		</tr>
+		<tr>
+			<td>execution(public String com.infy.repository.CustomerRepository.*(..))</td>
+			<td>execution of all public method in CustomerRepository of com.infy.repository package that returns a String</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>To use Spring AOP and AspectJ in Spring Boot project you have to add spring-boot-starter-aop starter in pom.xml file as follows:</p>
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+<p>This starter adds following key dependencies:</p>
+<ul>
+	<li>Spring AOP which provides basic AOP capabilities</li>
+	<li>AspectJ which provides a complete AOP framework</li>
+</ul>
+
+<h5>Around Advice :</h5>
+<p>It executed around the join point, i.e before and after the execution of the target method</p>
+<p>It is declared using @Around annotation</p>
+<p>You can perform custom logic before and after the method invocation, and you can even decide whether to proceed with the method execution or skip it altogether.</p>
+<p>This is powerful because it gives you the ability to modify the method's behavior.</p>
+
+```java
+public class MathService {
+
+    public double divide(int numerator, int denominator) {
+        return numerator / denominator;
+    }
+}
+
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class LoggingAspect {
+
+    @Around("execution(* com.example.service.MathService.divide(..))")
+    public Object logAndHandleDivision(ProceedingJoinPoint joinPoint) throws Throwable {
+        // Before the method execution
+        System.out.println("Before method execution: Logging...");
+
+        // Accessing method arguments
+        Object[] methodArgs = joinPoint.getArgs();
+        int numerator = (int) methodArgs[0];
+        int denominator = (int) methodArgs[1];
+
+        // Handling division by zero
+        if (denominator == 0) {
+            System.out.println("Denominator is zero. Cannot divide.");
+            return Double.NaN; // Returning a special value for division by zero
+        }
+
+        // Proceeding with the method execution
+        Object result = joinPoint.proceed();
+
+        // After the method execution
+        System.out.println("After method execution: Logging...");
+
+        return result;
+    }
+}
+
+```
+
+<p>In The Above Example, The @Around annotation indicates that this is an "around advice."</p>
+<p>The advice method logAndHandleDivision takes a ProceedingJoinPoint parameter, which allows you to control the method execution.</p>
+<p>Before the actual method (divide) is executed, you can perform custom logic (logging in this case).</p>
+<p>You can access the method arguments using joinPoint.getArgs() and modify them if needed.</p>
+<p>You can choose to proceed with the method execution using joinPoint.proceed() or skip it based on some conditions.</p>
+<p>After the method execution, you can perform additional actions.</p>
+<p>This is a powerful way to wrap custom logic around a method, providing a centralized way to handle common concerns.</p>
+
+<h5>Before Advice</h5>
+<p>"before advice" is a type of advice that allows you to execute custom logic before a method is invoked. It provides a way to perform actions, such as logging or validation, prior to the actual execution of the target method.</p>
+<p>Keep in mind that while "before advice" is useful for tasks like logging, it doesn't allow you to modify the method's input or output.</p>
+
+```java 
+@component
+public class Calculator {
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int subtract(int a, int b) {
+        return a - b;
+    }
+}
+
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+
+@component
+@Aspect
+public class LoggingAspect {
+
+    @Before("execution(* com.example.Calculator.*(..))")
+    public void logBeforeMethodExecution(JoinPoint joinPoint) {
+        System.out.println("Before method execution: Logging..."+joinPoint.getSignature());
+    }
+}
+```
+
+<p>The @Before annotation indicates that this is a "before advice."</p>
+<p>The advice method logBeforeMethodExecution is executed before any method in the Calculator class (execution(* com.example.Calculator.*(..))).</p>
+<p>When you run your application with Spring AOP configured, every time a method in the Calculator class is invoked, the "Before method execution: Logging..." message will be printed to the console.</p>
+
+<h5>After Advice</h5>
+<p>This advice is declared using @After annotation. It is executed after the execution of the actual method(fetchCustomer), even if it throws an exception during execution. It is commonly used for resource cleanup such as temporary files or closing database connections. The following is an example of this advice:</p>
+
+```java
+public class MessagingService {
+
+    public void sendMessage(String message) {
+        // Code to send the message
+        System.out.println("Message sent: " + message);
+    }
+}
+
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class LoggingAspect {
+
+    @After("execution(* com.example.MessagingService.sendMessage(String)) && args(message)")
+    public void logAfterMessageSent(String message) {
+        System.out.println("After sending message: Log - Message sent: " + message);
+    }
+}
+
+```
+<p>The @After annotation indicates that this is an "after advice."</p>
+<p>The advice method logAfterMessageSent is executed after the sendMessage method in the MessagingService class.</p>
+<p>This can be helpful when you want to perform actions based on the specific method that was intercepted or inspect the arguments passed to that method.</p>
+
+<h5>After Returning Advice : </h5>
+<p>This advice is declared using @AfterReturning annotation. It gets executed after joinpoint finishes its execution.</p>
+<p>f the target method throws an exception the advice is not executed</p>
+
+```java
+public class Calculator {
+
+    public int add(int a, int b) {
+        int result = a + b;
+        return result;
+    }
+
+    public int divide(int numerator, int denominator) {
+        if (denominator == 0) {
+            throw new IllegalArgumentException("Cannot divide by zero");
+        }
+        return numerator / denominator;
+    }
+}
+
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class LoggingAspect {
+
+    @AfterReturning(
+            pointcut = "execution(* com.example.Calculator.*(..))",
+            returning = "result")
+    public void logAfterMethodExecution(Object result) {
+        System.out.println("After method execution: Logging...");
+
+        // Accessing the result returned by the intercepted method
+        System.out.println("Method result: " + result);
+    }
+}
+
+```
+
+<p>The @AfterReturning annotation indicates that this is an "after returning advice."</p>
+<p>The pointcut expression targets all methods in the Calculator class (execution(* com.example.Calculator.*(..))).</p>
+<p>The returning attribute specifies the name of the parameter in the advice method (result) that will receive the value returned by the intercepted method.</p>
+<p>When you run your application with Spring AOP configured, every time a method in the Calculator class is invoked, and it successfully returns a result, the "After method execution: Logging..." message will be printed to the console, along with the result returned by the method.</p>
+
+```java
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class LoggingAspect {
+
+    @AfterReturning("execution(* com.example.Calculator.*(..))")
+    public void logAfterMethodExecution(JoinPoint joinPoint) {
+        System.out.println("After method execution: Logging..."+joinPoint.getSignature());
+    }
+}
+
+```
+
+<h5>AfterThrowing Advice</h5>
+<p>This advice is defined using @AfterThrowing annotation. It gets executed after an exception is thrown from the target method.</p>
+<p>This allows you to handle or log exceptions in a centralized way without modifying the original method.</p>
+
+```java
+public class BankAccount {
+
+    private double balance;
+
+    public BankAccount(double balance) {
+        this.balance = balance;
+    }
+
+    public void withdraw(double amount) {
+        if (amount > balance) {
+            throw new InsufficientFundsException("Insufficient funds to withdraw: " + amount);
+        }
+        balance -= amount;
+        System.out.println("Withdrawal successful. Remaining balance: " + balance);
+    }
+}
+
+
+import org.aspectj.lang.AfterThrowing;
+import org.aspectj.lang.JoinPoint;
+
+public class ExceptionHandlingAspect {
+
+    @AfterThrowing(
+            pointcut = "execution(* com.example.BankAccount.withdraw(double))",
+            throwing = "exception")
+    public void handleInsufficientFunds(JoinPoint joinPoint, InsufficientFundsException exception) {
+        System.out.println("Exception occurred: " + exception.getMessage());
+
+        // Additional handling logic can be added here, e.g., sending an email, logging, etc.
+    }
+}
+
+```
+
+<p>The @AfterThrowing annotation indicates that this is an "after throwing advice."</p>
+<p>The pointcut expression targets the withdraw method in the BankAccount class with a double parameter.</p>
+<p>The throwing attribute specifies the name of the parameter in the advice method (exception) that will receive the thrown exception.</p>
+<p>Now, when you run your application and attempt to withdraw an amount greater than the balance, the aspect will catch the InsufficientFundsException and execute the handleInsufficientFunds advice, logging the exception message.</p>
+
+<p>We can also use any advice without argument</p>
+
+```java
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class ExceptionHandlingAspect {
+
+    @AfterThrowing("execution(* *(..))")
+    public void handleException(JoinPoint joinPoint) {
+        System.out.println("Exception occurred in method: " + joinPoint.getSignature().getName());
+
+        // Additional handling logic can be added here, e.g., sending an email, logging, etc.
+    }
+}
+
+```
+
+<h5>@Pointcut Annotation</h5>
+<p>The @Pointcut annotation in Spring AOP is used to define a reusable pointcut expression, which is a set of join points where advice should be applied.</p>
+<p>It allows you to name and reuse a specific pointcut expression across multiple advice methods. This helps in keeping your code modular and avoids redundancy by centralizing the pointcut definitions.</p>
+
+```java
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+
+@Aspect
+public class LoggingAspect {
+
+    // Define a reusable pointcut expression
+    @Pointcut("execution(* com.example.MyService.*(..))")
+    public void serviceMethods() {}
+
+    // Advice applied to methods matching the pointcut expression
+    @Before("serviceMethods()")
+    public void logBeforeServiceMethods() {
+        System.out.println("Before service method execution: Logging...");
+    }
+
+    // Another advice using the same pointcut expression
+    @Before("serviceMethods()")
+    public void additionalActionBeforeServiceMethods() {
+        System.out.println("Before service method execution: Additional action...");
+    }
+}
+
+```
+
+<p>The @Pointcut annotation is used to define a pointcut expression named serviceMethods().</p>
+<p>The pointcut expression is specified as execution(* com.example.MyService.*(..)), which captures all methods in the MyService class.</p>
+<p>Two @Before advices use the serviceMethods() pointcut expression. This means that the advice logic will be applied to all methods matching the pointcut expression.</p>
+
+<h4>Spring Profile</h4>
+<p>Spring Profiles helps to classify  the classes and  properties file for the environment</p>
+<p>You can create multiple profiles and set one or more profiles as the  active profile. Based on the active profile spring framework chooses beans and properties file to run.</p>
+<p>Let us see how to configure different profiles using spring profiles in our projects.</p>
+<p>Steps to be followed:</p>
+<ol>
+	<li>Identify the beans which has to be part of a particular profile [Not mandatory]</li>
+	<li>Create environment-based properties file</li>
+	<li>Set active profiles.</li>
+</ol>
+<p>You can identify the Spring beans which have to be part of a profile using the following ways</p>
+<ol>
+	<li>Annotation @Profile</li>
+	<li>Bean declaration in XML</li>
+</ol>
+<p>@Profile helps spring to identify the beans that belong to a particular environment.</p>
+<ol>
+	<li>Any class which is annotated with stereotype annotations such as @Component,@Service,@Repository and @Configuration can be annotated with @Profile .</li>
+	<li>@Profile is applied at class level except for the classes annotated with @Configuration where @Profile is applied at the method level.</li>
+</ol>
+<p>@Profile-Class level:</p>
+
+```java
+@Profile("dev")
+@Component
+@Aspect
+public class LoggingAspect { 
+}
+```
+
+<p>This LoggingAspect class will run only if “dev” environment is active.</p>
+
+<p>@Profile- Method level:</p>
+
+```java
+@Configuration
+public class SpringConfiguration {
+	@Bean("customerService")
+	@Profile("dev")
+	public CustomerService customerServiceDev() {
+		CustomerService customerServiceDev= new CustomerService();
+		customerServiceDev.setName("Developement-Customer");
+		return customerServiceDev;
+	}
+	@Bean("customerService")
+	@Profile("prod")
+	public CustomerService customerServiceProd() {
+		CustomerService customerServiceProd=new 	CustomerService();
+		customerServiceProd.setName("Production-Customer");
+		return customerServiceProd;
+	}
+}
+
+```
+
+<p>In the above code snippet CustomerService bean is configured differently in the "dev" and "prod" environments. Depending on the currently active profile Spring fetches CustomerService accordingly.</p>
+<p>@Profile annotation in class level should not be overridden in the method level. It will cause NoSuchBeanDefinitionException.</p>
+<p>@Profile value can be prefixed with !(Not) operator</p>
+
+```java
+@Profile("!test")
+@Configuration
+@ComponentScan(basePackages="com.infy.service")
+public class SpringConfiguration { 
+}
+```
+
+<p>This SpringConfiguration class will run in all environments other than test.</p>
+
+<p>Note : if you do not apply @profile annotation on a  class, means that the particular bean is available in all environment(s). </p>
+
+<p>Spring Boot relies on application.properties file for configuration. To write configuration based on environment, you need to create different application.properties files. </p>
+
+<p>The file name has a naming convention as application-<user created profile name>.properties</p>
+<p>application-dev.properties</p>
+
+```properties
+# Oracle settings
+spring.datasource.url=jdbc:oracle:thin:@localhost:1522:devDB
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver.class=oracle.jdbc.driver.OracleDriver
+# logging
+logging.pattern.file= %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%
+logging.level.org.springframework.web: ERROR
+```
+
+<p>application-test.properties</p>
+
+```properties
+ # Oracle settings
+spring.datasource.url=jdbc:oracle:thin:@localhost:1522:testDB
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver.class=oracle.jdbc.driver.OracleDriver
+# logging
+logging.pattern.file= %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+logging.level.org.springframework.web: DEBUG
+```
+
+<p>application-prod.properties</p>
+
+```properties
+# mysql settings
+spring.datasource.url=jdbc:mysql://localhost:3306/prodDB?useSSL=false
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver.class=com.mysql.jdbc.Driver
+# logging
+logging.pattern.file= %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%
+logging.level.org.springframework.web: INFO
+```
+
+<p>The above shows how application.properties file with different configuration is created for 3 different environments(dev,test and prod).</p>
+
+<p>By now you are aware of how to map a bean or configure properties to a certain profile(eg :dev/prod/test), next we need to set the one which is active.</p>
+<p>The different way to do is as follows:</p>
+<ol>
+	<li>application.properties</li>
+	<li>JVM System Parameter</li>
+	<li>Maven Profile</li>
+</ol>
+<p>You can make more than 1 profile as active at a time.</p>
+
+<p>To set an active profile you need to write  the below property in the main application.properties file.</p>
+
+```properties
+spring.profiles.active=dev
+```
+
+```properties
+spring.profiles.active=dev,prod
+```
+
+<p>You can set profile using JVM system arguments in two ways , either set the VM arguments in Run configuration or programmatic configuration.</p>
+<p>To set through Run configuration give  the below command in VM arguments.</p>
+
+```java
+-Dspring.profiles.active=dev
+```
+
+<p>To set through programmatic approach set system property as follows,</p>
+
+```java
+public static void main( String[] args )    {     
+    System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "prod");
+}
+
+```
+
+<p>Through the command line: --spring.profiles.active=dev</p>
