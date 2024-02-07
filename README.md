@@ -1451,3 +1451,92 @@ logging.file.path=logs/Error.log
 <p>Once configuration is done you can use the Log4J logger in the application. To log information, you first need to get a logger object.</p>
 <p>his logger object is obtained by invoking getLogger() method of the org.apache.logging.log4j.LogManager class.</p>
 <p>This method takes the details of the class in which you want to log as a parameter and gives an object of org.apache.logging.log4j.Logger interface.</p>
+
+
+<h4>Spring Data Access/Integration</h4>
+<p>In Software Development, the process of storing data permanently into storage system is called is data persistance</p>
+<p>Implementing this data persistance through programming is one of the most critcal challenge for developers.</p>
+<p>The process of storing data involve three major steps</p>
+<ol>
+	<li>Data : What to store ?</li>
+	<li>Medium : How to store ?</li>
+	<li>Storage : Where to store ?</li>
+</ol>
+<h6>Data :</h6>
+<p>The data which needs to be stored can be</p>
+<p>Raw Data : Collected from file or other souces in the form of bytes</p>
+<p>Objects : It can be also in the form of objects in field of programming</p>
+<h6>Storage :</h6>
+<p>The Data which is collected can be stored to</p>
+<p>RAM or Secondary Storage Devices like hard drive</p>
+<p>Logical devices like Databases or files</p>
+<h6>Medium : </h6>
+<p>To Store data into storage, java provides various ways like</p>
+<ul>
+	<li>I/O Streams and Serialization</li>
+	<li>JDBC</li>
+	<li>ORM Frameworks like Hibernate</li>
+</ul>
+<p>The Java Input-Output(I/O) API provides classes for performing input and output operations on raw data.</p>
+<p>These classes are available in the java.io package.</p>
+<p>Java I/O API is built on four abstract classes. This depends upon the type of data it can handle (byte/character). </p>
+<p>InputStream and OutputStream: deals with bytes. </p>
+<p>Reader and Writer: deals with character.</p>
+<p>Serialization helps to covert raw data to java objects and vice-versa</p>
+<p>An object can be marked serializable by implementing the java.io.Serializable interface.</p>
+<p>Serializable objects can be converted into a stream of bytes.</p>
+<p>This stream of bytes can be written into a file.</p>
+<p>These bytes can be read back to re-create the object.</p>
+<p>Deserialization is the process of retrieving an object from the byte streams.</p>
+<p>Java I/O APIs  covers all the functionalities as a data persistence medium.</p>
+<p>Working with the file system is very difficult and inefficient in handling large and complex data.</p>
+<p>Using Java I/O also need lower-level details of the data to be retrieved, stored, or manipulated. </p>
+<p>Serialization  has certain disadvantages such as : </p>
+<p>Since storing and retrieval of the entire object graph is done at once, it is not a suitable approach while working with a large amount of data.</p>
+<p>Concurrent access is not possible.</p>
+<p>It provides no query capabilities.</p>
+<p>The data cannot be retrieved without de-serialization.</p>
+<p>JDBC or 'Java Database Connectivity' is a Java Core API for performing database interaction.</p>
+<p>Using JDBC API, a Java application can access a variety of databases such as MySQL, Oracle, etc.</p>
+<p>JDBC follows a relational database-oriented approach to work with the data using SQL queries. </p>
+<p>The problem with Serialization is solved by JDBC, but it does not store the Java objects directly. The data from the objects need to be converted into a SQL query and then executed, for persistence. </p>
+<p>SQL code has to be embedded within Java Programs which makes it non-portable.</p>
+<p>JDBC API allows the developer to fire the SQL queries from the Java code. That means the developer needs to know the specific SQL constructs for the Relational Database Management System (RDBMS) used.</p>
+<p>Also, it is the responsibility of the programmer to make sure that the data model and the object model are synchronized properly.</p>
+<p>Due to this JDBC API is not a maintainable solution for enterprise applications.</p>
+<p>JDBC, I/O, Serialization do not solve the problem of data persistence effectively.</p>
+<p>For a medium to be effective, it needs to take care of the fundamental difference in the way Object-Oriented Programs(OOP) and RDBMS deals with the data.</p>
+<ul>
+	<li>In Programming languages like Java, the related information or the data is persisted in the form of hierarchical and interrelated objects.</li>
+	<li>In the relational database, the data is persisted as table format or relations.</li>
+</ul>
+<p>To Solve these issues, we combine both OOP and RDBMS by mapping tables to Objects</p>
+<p>The greatest challenge in integrating the concepts of RDBMS and OOP is  mapping of the Java objects to databases.</p>
+<p>When object and relational paradigms work with each other, there arises technical and conceptual difficulties arise, as mapping of an object to a table may not be possible in all the contexts.</p>
+<p>Storing and retrieving Java objects using a Relational database exposes a paradigm mismatch called "Object-Relational Impedance Mismatch"</p>
+<p>These differences are because of perception, style, and patterns involved in both the paradigms that leads to the following paradigm mismatches:</p>
+<ul>
+	<li>Granularity: Mismatch between the number of classes in the object model and the number of tables in the relational model.</li>
+	<li>Inheritance or Subtype: Inheritance is an object-oriented paradigm that is not available in RDBMS.</li>
+	<li>Associations: In object-oriented programming, the association is represented using reference variables, whereas, in the relational model foreign keys are used for associating two tables.</li>
+	<li>Identity: In Java, object equality is determined by the "==" operator or "equals()" method, whereas in RDBMS, uses the primary key to uniquely identify the records.</li>
+	<li>Data Navigation: In Java, the dot(.) operator is used to travel through the object network, whereas, in RDBMS join operation is used to move between related records. </li>
+</ul>
+
+<p>Resolving Object-Relational Impedance Mismatch is one of the key challenges in data persistence. Object Relational Mapping helps to achieve the same.</p>
+<p>Object-Relational Mapping (ORM) is a programming paradigm that allows developers to interact with relational databases using an object-oriented approach. In simpler terms, ORM helps bridge the gap between the object-oriented programming language (like Java or Python) and relational databases (like MySQL or PostgreSQL).</p>
+<p>Many third-party ORM persistence frameworks like Hibernate, EclipseLink, are available in the market.</p>
+<p>These frameworks helped the developers to achieve Object Relational Mapping and perform database operations in the object-oriented approach</p>
+<p>But it became challenging to the port application from one ORM framework to another, as every framework addressed the Object-Relational Impedance mismatch in its own way.</p>
+<p>In 2006, Java Persistence API (JPA) was released by Java Community Process, to standardize the persistence process. </p>
+<p>JPA incorporated many features from the existing frameworks like Hibernate and TopLink Essentials.</p>
+<p>JPA became the standard specification for ORM in Java. As the name indicates, JPA is a specification (with a set of interfaces), which provides the standards and specifications to be followed while mapping the Java objects to the database tables.</p>
+<p>Each vendor, who provides an ORM framework, implements JPA. A few of the ORM frameworks are EclipseLink, OpenJPA, and Hibernate. Any of these ORM frameworks can be used to connect a Java application to the database. </p>
+<img src="https://i.stack.imgur.com/4sVPQ.png">
+<h5>Hibernate</h5>
+<p>Hibernate is a pure Java Persistence Framework that supports Object Relational Mapping. The main goal of this framework is to release the programmers from the common data persistence related works. It is an open-source framework.</p>
+<p>Hibernate provides an implementation for JPA Specification.</p>
+<p>Hibernate is a powerful ORM solution that maps user-defined Java classes to DB tables.</p>
+<p>Hibernate has a strong query language which is called HQL. It supports native SQL as well.</p>
+<p>Hibernate reduces the number of lines in the code by keeping object-table mapping itself and gives the result to an application as Java objects. It ensures the programmer doesn't have to manually handle persistent data, this way reducing the time of development and cost of maintenance.</p>
+<p>Hibernate uses SQL based schema for mapping object model to the relational model.</p>
