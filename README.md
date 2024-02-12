@@ -1540,3 +1540,923 @@ logging.file.path=logs/Error.log
 <p>Hibernate has a strong query language which is called HQL. It supports native SQL as well.</p>
 <p>Hibernate reduces the number of lines in the code by keeping object-table mapping itself and gives the result to an application as Java objects. It ensures the programmer doesn't have to manually handle persistent data, this way reducing the time of development and cost of maintenance.</p>
 <p>Hibernate uses SQL based schema for mapping object model to the relational model.</p>
+
+<h3>Spring Data</h3>
+<p>Spring Data is a part of the larger Spring Framework ecosystem and provides a set of abstractions and utilities for simplifying the development of data access layers in Java applications. It aims to make it easier to work with various data storage technologies, such as relational databases, NoSQL databases, and cloud-based data services.</p>
+<p>The key goals of Spring Data include:</p>
+<ol>
+    <li><strong>Consistent Data Access:</strong> Spring Data aims to provide a consistent programming model and approach for data access, regardless of the underlying data store.</li>
+    <li><strong>Reduced Boilerplate Code:</strong> It helps in reducing the amount of boilerplate code typically required for data access operations, making development more efficient.</li>
+    <li><strong>Support for Multiple Data Stores:</strong> Spring Data supports a variety of data stores, including relational databases (like MySQL, PostgreSQL), NoSQL databases (like MongoDB, Cassandra), and cloud-based services (like AWS DynamoDB, Azure Cosmos DB).</li>
+    <li><strong>Integration with Spring Framework:</strong> Spring Data integrates seamlessly with the core Spring Framework and other Spring projects, providing a unified development experience.</li>
+</ol>
+<p>There are several modules within Spring Data, each tailored for specific data stores. Some of the commonly used Spring Data modules include:</p>
+<ul>
+    <li><code>Spring Data JPA:</code> This module simplifies the development of data access using the Java Persistence API (JPA) for relational databases. It provides repository support and helps in creating queries based on method names.</li>
+    <li><code>Spring Data MongoDB:</code> This module facilitates the integration of MongoDB, a NoSQL database, with Spring applications. It provides abstractions for working with MongoDB documents and repositories.</li>
+    <li><code>Spring Data JDBC:</code> This module offers a simpler and more direct approach to working with relational databases using the Java Database Connectivity (JDBC) API.</li>
+    <li><code>Spring Data Redis:</code> This module provides support for working with Redis, an in-memory data structure store. It includes features for caching, data storage, and retrieval using Redis.</li>
+    <li><code>Spring Data REST:</code> This module allows you to expose your Spring Data repositories as RESTful services automatically, reducing the effort required to create a REST API for your data.</li>
+</ul>
+<p>Developers can choose the appropriate Spring Data module based on the data store they are using and their preferred data access approach. The use of Spring Data helps in achieving a more standardized and efficient way of handling data access concerns in Spring applications.</p>
+<h4>Spring Data JPA</h4>
+<p>Spring Data JPA helps to implement the persistence layer by reducing the effort that is actually needed. </p>
+<p>As a part of the core project, Spring Data Commons provides basic interfaces to support the following commonly used database operations: </p>
+<ul>
+	<li>Performing CRUD</li>
+	<li>Sorting of data</li>
+	<li>Pagination of data</li>
+	<li>Spring Data provides persistent technology-specific abstractions as interfaces through its sub-projects.</li>
+	<li>JpaRepository interface to support JPA.</li>
+	<li>MongoRepository interface to support MongoDB and many more.</li>
+</ul>
+<p> Spring Data abstracts the data access technology-specific details from your application. Now, the application has to extend only the relevant interface of Spring Data to perform required database operations.</p>
+<p>For example, if you would like to implement your application's data access layer using JPA repository, then your application has to define an interface that extends the JpaRepository interface.</p>
+<h5>Hibernate Annotations for Mapping Classes to Database Tables</h5>
+<p>Hibernate provides a variety of annotations to map Java classes to database tables and define the object-relational mapping (ORM) details. Here's an explanation along with examples for each commonly used Hibernate annotation:</p>
+<ol>
+    <li>
+        <code>@Entity:</code> Marks a Java class as an entity, indicating that it should be persisted to the database.
+        <pre>
+            <code>
+                @Entity
+                public class Product {
+                    // Class fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Table:</code> Specifies details about the associated database table, such as the table name and other properties.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "products")
+                public class Product {
+                    // Class fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Id:</code> Marks a field as the primary key of the entity.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "products")
+                public class Product {
+                    @Id
+                    private Long id;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@GeneratedValue:</code> Specifies the strategy for generating primary key values automatically.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "products")
+                public class Product {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Column:</code> Customizes the mapping of a field to a database column, allowing specification of details such as column name, length, and nullable status.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "products")
+                public class Product {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @Column(name = "product_name", length = 50, nullable = false)
+                    private String productName;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Temporal:</code> Specifies the temporal type of a date or time field.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "employees")
+                public class Employee {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @Temporal(TemporalType.DATE)
+                    private Date birthDate;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Enumerated:</code> Specifies the mapping of an enumerated (enum) type.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "students")
+                public class Student {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @Enumerated(EnumType.STRING)
+                    private Gender gender;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@OneToOne:</code> Defines a one-to-one relationship between entities.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "students")
+                public class Student {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @OneToOne
+                    @JoinColumn(name = "address_id")
+                    private Address address;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@OneToMany and @ManyToOne:</code> Define one-to-many and many-to-one relationships between entities.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "orders")
+                public class Order {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @OneToMany(mappedBy = "order")
+                    private List&lt;OrderItem&gt; orderItems;
+                    // Other fields and methods
+                }
+                @Entity
+                @Table(name = "order_items")
+                public class OrderItem {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @ManyToOne
+                    @JoinColumn(name = "order_id")
+                    private Order order;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@JoinColumn:</code> Specifies the foreign key column when defining a many-to-one or one-to-one relationship.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "order_items")
+                public class OrderItem {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @ManyToOne
+                    @JoinColumn(name = "order_id")
+                    private Order order;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@JoinTable:</code> Defines the association table in a many-to-many relationship.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "students")
+                public class Student {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @ManyToMany
+                    @JoinTable(name = "student_courses",
+                               joinColumns = @JoinColumn(name = "student_id"),
+                               inverseJoinColumns = @JoinColumn(name = "course_id"))
+                    private List&lt;Course&gt; courses;
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+    <li>
+        <code>@Transient:</code> Marks a field as not to be persisted to the database.
+        <pre>
+            <code>
+                @Entity
+                @Table(name = "products")
+                public class Product {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;<br>
+                    @Transient
+                    private transientField; // This field will not be persisted to the database
+                    // Other fields and methods
+                }
+            </code>
+        </pre>
+    </li>
+</ol>
+<p>These annotations provide a robust set of tools for mapping Java classes to database tables in Hibernate, making it easier to work with databases in a Java application. Developers can choose the appropriate annotations based on their specific use cases and requirements.</p>
+
+<h5>Repository</h5>
+<p>In the context of databases and data access, a repository is a design pattern that provides an abstraction layer between the application code and the data storage. It typically includes methods for querying, saving, updating, and deleting data. Repositories are used to centralize and organize data access logic.</p>
+<p>The central interface in the Spring Data repository abstraction is Repository.</p>
+<p>It takes the domain class to manage as well as the identifier type of the domain class as type arguments.</p>
+<p>This interface acts primarily as a marker interface to capture the types to work with and to help you to discover interfaces that extend this one.</p>
+<p>The CrudRepository and ListCrudRepository interfaces provide sophisticated CRUD functionality for the entity class that is being managed.</p>
+
+```java
+public interface CrudRepository<T, ID> extends Repository<T, ID> {
+
+  <S extends T> S save(S entity);
+
+  Optional<T> findById(ID primaryKey);
+
+  Iterable<T> findAll();
+
+  long count();
+
+  void delete(T entity);
+
+  boolean existsById(ID primaryKey);
+
+  // … more functionality omitted.
+}
+```
+
+<p>The methods declared in this interface are commonly referred to as CRUD methods. ListCrudRepository offers equivalent methods, but they return List where the CrudRepository methods return an Iterable.</p>
+
+<p>Additional to the CrudRepository, there are PagingAndSortingRepository and ListPagingAndSortingRepository which add additional methods to ease paginated access to entities:</p>
+
+```java
+public interface PagingAndSortingRepository<T, ID>  {
+
+  Iterable<T> findAll(Sort sort);
+
+  Page<T> findAll(Pageable pageable);
+}
+```
+
+# JpaRepository Explained
+
+This repository (`UserRepository`) demonstrates the usage of `JpaRepository` in the context of Spring Data JPA. It seamlessly integrates features from `CrudRepository` and `PagingAndSortingRepository` while adding JPA-specific functionalities.
+
+## Contents
+
+1. [CrudRepository](#1-crudrepository)
+2. [PagingAndSortingRepository](#2-pagingandsortingrepository)
+3. [JpaRepository](#3-jparepository)
+4. [Example](#4-example)
+
+## 1. CrudRepository
+
+**Basic CRUD Operations:**
+- `CrudRepository` provides fundamental CRUD (Create, Read, Update, Delete) operations.
+- Common methods include `save`, `findById`, `findAll`, and `delete`.
+
+**Entity-Specific Queries:**
+- Allows defining custom queries using method naming conventions or `@Query` annotation.
+
+## 2. PagingAndSortingRepository
+
+**Pagination and Sorting:**
+- Extends `CrudRepository` and adds support for paginated queries and sorting.
+- Methods like `findAll(Pageable pageable)` return paginated results for fetching data in chunks.
+
+## 3. JpaRepository
+
+**Extension of CrudRepository and PagingAndSortingRepository:**
+- `JpaRepository` extends both `CrudRepository` and `PagingAndSortingRepository`.
+- Inherits basic CRUD operations and the ability to perform paginated queries and sorting.
+
+**Additional JPA Features:**
+- Adds specific features related to the Java Persistence API (JPA).
+- Utilizes JPA features like entity listeners, flushing changes to the database, and immediate saving and flushing (`saveAndFlush` method).
+
+**Derived Query Methods:**
+- Supports derived query methods similar to `CrudRepository`.
+- Enables creating custom queries based on method names, reducing the need for explicit JPQL or SQL.
+
+## 4. Example
+
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    // Inherits basic CRUD operations
+    // Supports custom query methods
+    // Extends PagingAndSortingRepository for pagination and sorting
+
+    // Additional features specific to JpaRepository
+    List<User> findByUsername(String username);
+
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    List<User> findByEmail(@Param("email") String email);
+
+    @OrderBy("lastName ASC, firstName DESC")
+    List<User> findAll();
+
+    // Pagination and sorting
+    Page<User> findByLastName(String lastName, Pageable pageable);
+}
+```
+
+# Custom Base Repository Interface
+
+In a Spring Data JPA application, you might encounter scenarios where multiple repositories share a common set of methods. In such cases, creating a custom base repository interface can help centralize and reuse these methods across repositories.
+
+## Creating a Base Interface
+
+To create a base interface, follow these steps:
+
+1. **Define the Interface:**
+   - Create a Java interface that contains the shared methods. Annotate it with `@NoRepositoryBean` to prevent Spring Data from attempting to create an instance directly.
+
+```java
+@NoRepositoryBean
+interface MyBaseRepository<T, ID> extends Repository<T, ID> {
+
+  Optional<T> findById(ID id);
+
+  <S extends T> S save(S entity);
+}
+
+interface UserRepository extends MyBaseRepository<User, Long> {
+  User findByEmailAddress(EmailAddress emailAddress);
+}
+```
+
+<p>In the prior example, you defined a common base interface for all your domain repositories and exposed findById(…) as well as save(…).These methods are routed into the base repository implementation of the store of your choice provided by Spring Data (for example, if you use JPA, the implementation is SimpleJpaRepository), because they match the method signatures in CrudRepository. So the UserRepository can now save users, find individual users by ID, and trigger a query to find Users by email address.</p>
+
+<p>JpaRepository in Spring Data JPA provides a wide range of methods for working with entities in a database. Below is a list of some common methods offered by JpaRepository. Note that this is not an exhaustive list, and you can find additional methods in the official documentation. The methods are inherited from CrudRepository and PagingAndSortingRepository, along with some additional ones.</p>
+
+```java
+public interface JpaRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
+
+    // Basic CRUD Operations
+    <S extends T> S save(S entity);
+    Optional<T> findById(ID primaryKey);
+    boolean existsById(ID primaryKey);
+    Iterable<T> findAll();
+    Iterable<T> findAllById(Iterable<ID> ids);
+    long count();
+    void deleteById(ID id);
+    void delete(T entity);
+    void deleteAll(Iterable<? extends T> entities);
+    void deleteAll();
+
+    // Query Methods
+    List<T> findByProperty(String property);
+    List<T> findByPropertyAndAnotherProperty(String property, String anotherProperty);
+
+    // Derived Query Methods
+    List<T> findByFirstNameAndLastName(String firstName, String lastName);
+
+    // Query by Example
+    <S extends T> Example<S> example(S example);
+
+    // Sorting
+    List<T> findAll(Sort sort);
+
+    // Pagination
+    Page<T> findAll(Pageable pageable);
+
+    // Flush Changes to the Database
+    void flush();
+
+    // Save and Flush Changes to the Database
+    <S extends T> S saveAndFlush(S entity);
+
+    // Delete in a Batch
+    void deleteInBatch(Iterable<T> entities);
+
+    // Delete All in a Batch
+    void deleteAllInBatch();
+
+    // Obtaining the Underlying EntityManager
+    EntityManager getEntityManager();
+}
+
+```
+
+<h1>Query Methods in Spring Data JPA</h1>
+
+<h2>Basic Syntax:</h2>
+
+<p>The basic syntax of a Query Method is derived from the method name. It typically follows a pattern like <code>findBy&lt;Property&gt;</code> or <code>findBy&lt;Property&gt;And&lt;Property&gt;</code>. For example:</p>
+
+<pre><code>// Generated query: SELECT * FROM User WHERE username = ?1
+List&lt;User&gt; findByUsername(String username);
+</code></pre>
+
+<p>This method searches for users by their username.</p>
+
+<h2>Query Keywords:</h2>
+
+<p>Query Methods support various keywords to express different conditions in the query. Common keywords include <code>And</code>, <code>Or</code>, <code>Is</code>, <code>Equals</code>, <code>Like</code>, <code>StartingWith</code>, <code>EndingWith</code>, <code>Containing</code>, <code>IgnoreCase</code>, and <code>OrderBy</code>. For instance:</p>
+
+<pre><code>// Generated query: SELECT * FROM User WHERE email = ?1 AND username LIKE ?2 ORDER BY createdAt DESC
+List&lt;User&gt; findByEmailAndUsernameLikeOrderByCreatedAtDesc(String email, String username);
+</code></pre>
+
+<p>This method finds users by email, with a username containing a specified string, and orders the result by the <code>createdAt</code> field in descending order.</p>
+
+<h2>Return Types:</h2>
+
+<p>Query Methods can return various types:</p>
+
+<ul>
+    <li><strong>Entity:</strong> When the method returns the entity type, it fetches the entire entity.</li>
+    <li><strong>Collection of Entities:</strong> <code>List&lt;Entity&gt;</code> or <code>Set&lt;Entity&gt;</code> returns a collection of entities.</li>
+    <li><strong>Optional&lt;Entity&gt;:</strong> Returns an <code>Optional</code> containing the entity or <code>Optional.empty()</code>.</li>
+</ul>
+
+<pre><code>// Return a single user
+User findByUsername(String username);
+
+// Return a list of users
+List&lt;User&gt; findByEmail(String email);
+
+// Return an optional user
+Optional&lt;User&gt; findByUsernameAndEmail(String username, String email);
+</code></pre>
+
+<h2>Custom Projections:</h2>
+
+<p>Custom projections allow fetching a subset of fields instead of the entire entity. This is achieved by defining an interface with getter methods corresponding to the desired fields.</p>
+
+<pre><code>interface UserProjection {
+    String getUsername();
+    String getEmail();
+}
+
+// Custom projection method
+List&lt;UserProjection&gt; findByEmail(String email);
+</code></pre>
+
+<h2>Limitations:</h2>
+
+<p>While Query Methods are powerful for common scenarios, they may have limitations for more complex queries or those involving JOINs. In such cases, you might need to use <code>@Query</code> annotations or custom query methods with <code>Specification</code> or <code>Criteria</code> APIs.</p>
+
+<p>In summary, Query Methods in Spring Data JPA provide a high-level and expressive way to interact with databases, making database access more readable, concise, and maintainable.</p>
+
+<h1>Query By Example in Spring Data JPA</h1>
+    <h2>1. Create an Example Object:</h2>
+    <pre><code class="java">Person examplePerson = new Person();
+examplePerson.setName("John");
+examplePerson.setAge(25);</code></pre>
+    <h2>2. Create ExampleMatcher:</h2>
+    <pre><code class="java">ExampleMatcher matcher = ExampleMatcher.matching()
+        .withIgnorePaths("age")
+        .withIgnoreCase()
+        .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.startsWith());</code></pre>
+    <h2>3. Create Example:</h2>
+    <pre><code class="java">Example&lt;Person&gt; example = Example.of(examplePerson, matcher);</code></pre>
+    <h2>4. Perform Query:</h2>
+    <pre><code class="java">List&lt;Person&gt; result = personRepository.findAll(example);</code></pre>
+    <h3>Example Spring Data JPA Repository Interface:</h3>
+    <pre><code class="java">import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+    List&lt;Person&gt; findAll(Example&lt;Person&gt; example);
+    // Other custom query methods can be defined here as well.
+}</code></pre>
+
+ <h1>Transactionality in Spring Data JPA</h1>
+
+    <h2>1. Transactional Annotation:</h2>
+    <pre><code class="java">@Service
+public class MyService {
+
+    @Autowired
+    private MyRepository myRepository;
+
+    @Transactional
+    public void performTransactionalOperation() {
+        // Operations that should be part of a single transaction
+        // ...
+    }
+}</code></pre>
+
+    <h2>2. Declarative Transaction Management:</h2>
+    <pre><code class="java">@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+public void performTransactionalOperation() {
+    // ...
+}</code></pre>
+
+    <h2>3. Propagation and Isolation:</h2>
+    <pre><code class="java">@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+public void performTransactionalOperation() {
+    // ...
+}</code></pre>
+
+    <h2>4. Rollback Rules:</h2>
+    <pre><code class="java">@Transactional(rollbackFor = { MyException.class, AnotherException.class })
+public void performTransactionalOperation() {
+    // ...
+}</code></pre>
+
+    <h2>5. Transactional Repositories:</h2>
+    <pre><code class="java">// Methods in Spring Data JPA repositories are transactional by default.
+// CRUD operations are wrapped in transactions.</code></pre>
+
+    <h2>6. Programmatic Transaction Management:</h2>
+    <pre><code class="java">@Autowired
+private PlatformTransactionManager transactionManager;
+
+public void performProgrammaticTransaction() {
+    TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+    transactionTemplate.execute(status -> {
+        // Operations within the transaction
+        // ...
+        return null; // or a result if needed
+    });
+}</code></pre>
+
+<h1>Spring Data JPA CRUD Operations</h1>
+
+    <h2>Entity Class - Person:</h2>
+    <pre><code class="java">@Entity
+public class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private int age;
+
+    // Constructors, getters, setters, etc.
+}</code></pre>
+
+    <h2>1. Create (Save):</h2>
+    <pre><code class="java">import org.springframework.data.repository.CrudRepository;
+
+public interface PersonRepository extends CrudRepository&lt;Person, Long&gt; {
+}</code></pre>
+
+    <h3>Usage:</h3>
+    <pre><code class="java">// Assuming you have a PersonService with @Autowired PersonRepository
+
+@Service
+public class PersonService {
+
+    public void savePerson(Person person) {
+        personRepository.save(person);
+    }
+}</code></pre>
+
+    <h2>2. Read (Find):</h2>
+    <pre><code class="java">// Methods available:
+// - findById
+// - findAll
+// - findBy{PropertyName} (Custom query methods based on property names)
+
+@Service
+public class PersonService {
+
+    public Person findById(Long id) {
+        return personRepository.findById(id).orElse(null);
+    }
+
+    public List&lt;Person&gt; findAll() {
+        return (List&lt;Person&gt;) personRepository.findAll();
+    }
+
+    public List&lt;Person&gt; findByName(String name) {
+        return personRepository.findByName(name);
+    }
+}</code></pre>
+
+    <h2>3. Update (Save):</h2>
+    <pre><code class="java">// The save method is used for both creating and updating entities.
+// If the entity has an assigned primary key, it will be updated; otherwise, it will be inserted.
+
+@Service
+public class PersonService {
+
+    public void updatePerson(Person updatedPerson) {
+        personRepository.save(updatedPerson);
+    }
+}</code></pre>
+
+    <h2>4. Delete:</h2>
+    <pre><code class="java">// Methods available:
+// - deleteById
+// - delete
+// - deleteAll
+
+@Service
+public class PersonService {
+
+    public void deleteById(Long id) {
+        personRepository.deleteById(id);
+    }
+
+    public void deletePerson(Person person) {
+        personRepository.delete(person);
+    }
+
+    public void deleteAll() {
+        personRepository.deleteAll();
+    }
+}</code></pre>
+
+<h1>Pagination and Sorting in Spring Data JPA</h1>
+
+    <h2>Pagination Example:</h2>
+
+    <h3>1. Define a Repository Interface:</h3>
+    <pre><code class="java">import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface PersonRepository extends PagingAndSortingRepository&lt;Person, Long&gt; {
+}</code></pre>
+
+    <h3>2. Use `Pageable` for Pagination:</h3>
+    <pre><code class="java">import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+@Service
+public class PersonService {
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    public Page&lt;Person&gt; findAllPaginated(Pageable pageable) {
+        return personRepository.findAll(pageable);
+    }
+}</code></pre>
+
+    <h3>3. Controller Usage:</h3>
+    <pre><code class="java">import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PersonController {
+
+    @Autowired
+    private PersonService personService;
+
+    @GetMapping("/persons")
+    public Page&lt;Person&gt; getAllPersons(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
+        return personService.findAllPaginated(PageRequest.of(page, size));
+    }
+}</code></pre>
+
+    <h2>Sorting Example:</h2>
+
+    <h3>1. Define a Repository Interface:</h3>
+    <pre><code class="java">import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface PersonRepository extends PagingAndSortingRepository&lt;Person, Long&gt; {
+}</code></pre>
+
+    <h3>2. Use `Sort` for Sorting:</h3>
+    <pre><code class="java">import org.springframework.data.domain.Sort;
+
+@Service
+public class PersonService {
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    public Iterable&lt;Person&gt; findAllSorted(Sort sort) {
+        return personRepository.findAll(sort);
+    }
+}</code></pre>
+
+    <h3>3. Controller Usage:</h3>
+    <pre><code class="java">import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PersonController {
+
+    @Autowired
+    private PersonService personService;
+
+    @GetMapping("/persons")
+    public Iterable&lt;Person&gt; getAllPersons(@RequestParam(defaultValue = "name") String sortBy,
+                                              @RequestParam(defaultValue = "asc") String sortOrder) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+        return personService.findAllSorted(sort);
+    }
+}</code></pre>
+
+<h1>Specifications in Spring Data JPA</h1>
+
+    <h2>1. Create a Specification Class:</h2>
+
+    <pre><code class="java">import org.springframework.data.jpa.domain.Specification;
+
+public class PersonSpecifications {
+
+    public static Specification&lt;Person&gt; hasName(String name) {
+        return (root, query, criteriaBuilder) -&gt; criteriaBuilder.equal(root.get("name"), name);
+    }
+
+    public static Specification&lt;Person&gt; hasAgeGreaterThan(int age) {
+        return (root, query, criteriaBuilder) -&gt; criteriaBuilder.greaterThan(root.get("age"), age);
+    }
+
+    public static Specification&lt;Person&gt; livesInCity(String city) {
+        return (root, query, criteriaBuilder) -&gt; criteriaBuilder.equal(root.get("city"), city);
+    }
+}</code></pre>
+
+    <h2>2. Use Specifications in Repository Interface:</h2>
+
+    <pre><code class="java">import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.CrudRepository;
+
+public interface PersonRepository extends CrudRepository&lt;Person, Long&gt;, JpaSpecificationExecutor&lt;Person&gt; {
+}</code></pre>
+
+    <h2>3. Apply Specifications in Service:</h2>
+
+    <pre><code class="java">import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
+
+import javax.persistence.criteria.Predicate;
+import java.util.List;
+
+@Service
+public class PersonService {
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    public List&lt;Person&gt; findPersonsByCriteria(String name, int age, String city) {
+        Specification&lt;Person&gt; spec = Specifications.where(null);
+
+        if (name != null) {
+            spec = spec.and(PersonSpecifications.hasName(name));
+        }
+
+        if (age &gt; 0) {
+            spec = spec.and(PersonSpecifications.hasAgeGreaterThan(age));
+        }
+
+        if (city != null) {
+            spec = spec.and(PersonSpecifications.livesInCity(city));
+        }
+
+        return personRepository.findAll(spec);
+    }
+}</code></pre>
+
+    <h2>4. Controller Usage:</h2>
+
+    <pre><code class="java">import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PersonController {
+
+    @Autowired
+    private PersonService personService;
+
+    @GetMapping("/persons")
+    public List&lt;Person&gt; getPersonsByCriteria(@RequestParam(required = false) String name,
+                                                 @RequestParam(required = false, defaultValue = "0") int age,
+                                                 @RequestParam(required = false) String city) {
+        return personService.findPersonsByCriteria(name, age, city);
+    }
+}</code></pre>
+
+ <h1>Associations in Spring Data JPA</h1>
+
+    <h2>1. One-to-One Association:</h2>
+
+    <pre><code class="java">@Entity
+public class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
+
+    // Constructors, getters, setters, etc.
+}
+
+@Entity
+public class Address {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String street;
+
+    // Constructors, getters, setters, etc.
+}</code></pre>
+
+    <h2>2. One-to-Many Association:</h2>
+
+    <pre><code class="java">@Entity
+public class Department {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    private List&lt;Employee&gt; employees;
+
+    // Constructors, getters, setters, etc.
+}
+
+@Entity
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    // Constructors, getters, setters, etc.
+}</code></pre>
+
+    <h2>3. Many-to-One Association:</h2>
+
+    <p>Same as One-to-Many, just focus on the <code>Employee</code> entity.</p>
+
+    <h2>4. Many-to-Many Association:</h2>
+
+    <pre><code class="java">@Entity
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @ManyToMany
+    @JoinTable(name = "student_course",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private List&lt;Course&gt; courses;
+
+    // Constructors, getters, setters, etc.
+}
+
+@Entity
+public class Course {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    @ManyToMany(mappedBy = "courses")
+    private List&lt;Student&gt; students;
+
+    // Constructors, getters, setters, etc.
+}</code></pre>
