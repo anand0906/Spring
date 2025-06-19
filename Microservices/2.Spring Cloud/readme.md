@@ -118,3 +118,5 @@ A suite of projects that provides:
 ## Summary
 
 Cloud-native applications require specific design patterns to leverage cloud advantages effectively. The combination of Spring Cloud and Netflix OSS provides proven solutions for common microservice challenges like service discovery, configuration management, load balancing, and fault tolerance. This approach enables developers to build resilient, scalable applications that truly harness the power of cloud computing.
+
+
