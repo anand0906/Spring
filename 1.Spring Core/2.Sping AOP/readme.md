@@ -1,89 +1,119 @@
 # Spring Aspect Oriented Programming (AOP)
 
-Spring AOP (Aspect-Oriented Programming) is a framework provided by the Spring framework that enables developers to seperate and modularize cross-cutting concerns in their applications code.
+Spring AOP (Aspect-Oriented Programming) is a framework provided by the Spring framework that enables developers to separate and modularize cross-cutting concerns in their applications.
 
-## Cross Cutting Concerns
+## Table of Contents
 
-Imagine you're building a big software project, and there are certain things that need to happen across different parts of your code. These things are not directly related to what each part of your code , they're more like common background tasks that multiple parts of your code need to handle. Examples could be logging, security checks, or error handling.
+- [What are Cross-Cutting Concerns?](#what-are-cross-cutting-concerns)
+- [Key Concepts of AOP](#key-concepts-of-aop)
+  - [Aspect](#aspect)
+  - [Join Point](#join-point)
+  - [Advice](#advice)
+  - [Pointcut](#pointcut)
+- [Setup](#setup)
+- [Types of Advice](#types-of-advice)
+  - [Around Advice](#around-advice)
+  - [Before Advice](#before-advice)
+  - [After Advice](#after-advice)
+  - [After Returning Advice](#after-returning-advice)
+  - [After Throwing Advice](#after-throwing-advice)
+- [Reusable Pointcuts](#reusable-pointcuts)
 
-These are called cross cutting concerns
+---
 
-Now, in regular programming, you would have to write this code throughout your code, making it a bit messy and harder to understand.
+## What are Cross-Cutting Concerns?
 
-To Handle this issue, AOP helps you keep these background tasks separate from your main code, making everything cleaner and more organized.
+Cross-cutting concerns are functionalities that span multiple parts of an application but are not directly related to the core business logic. Common examples include:
 
-Simply, when we are writing code for an application, some code will common for some classes, which is nt directly depedent on individual class logics, but those are tightly coupled with that classes. It looks bit messy, so we will try to separate those common code and make it to run automatically with resepct to that classes.
+- Logging
+- Security checks
+- Error handling
+- Transaction management
+- Performance monitoring
 
-These way of programming is called aspect oriented programming
+**The Problem:** In traditional programming, these concerns are scattered throughout the codebase, making it messy and harder to maintain.
 
-## Key concepts of AOP
+**The Solution:** AOP helps you keep these background tasks separate from your main code, making everything cleaner and more organized. The common code runs automatically with respect to the classes that need it.
+
+---
+
+## Key Concepts of AOP
 
 ### Aspect
 
-Aspect is a class that implements the cross-cutting concerns
+An **Aspect** is a class that implements cross-cutting concerns.
 
-To declare a class as an aspect it should be annotated with the @Aspect annotation
+**How to declare:**
+- Annotate the class with `@Aspect`
+- The class must also be annotated with `@Component` or its derivatives
 
-It should be applied to the class which is annotated with @Component annotation or with derivatives of it.
+```java
+@Component
+@Aspect
+public class LoggingAspect {
+    // Advice methods go here
+}
+```
 
-### Joint Point
+### Join Point
 
-Join point is a specific point in the application such as method execution, exception handling, changing object variable values, etc during its execution.
+A **Join Point** is a specific point in the application execution where cross-cutting logic can be applied, such as:
 
-It is basically defines when the common code should be executed
+- Method execution
+- Exception handling
+- Changing object variable values
 
-In Spring AOP a join point is always the execution of a method.
+> **Note:** In Spring AOP, a join point is always the execution of a method.
 
 ### Advice
 
-Advice is a method of the aspect class that provides the implementation for the cross-cutting concern.
+**Advice** is a method in the aspect class that contains the implementation of the cross-cutting concern. It gets executed at selected join points.
 
-It gets executed at the selected join point(s)
+**Types of Advice:**
 
-There are different types of advices in spring aop
+| Type | Annotation | Description |
+|------|------------|-------------|
+| **Before** | `@Before` | Executes before the join point |
+| **After Returning** | `@AfterReturning` | Executes after the join point finishes successfully |
+| **After Throwing** | `@AfterThrowing` | Executes if an exception is thrown from the join point |
+| **After** | `@After` | Executes after the join point (whether it throws an exception or not) |
+| **Around** | `@Around` | Executes around the join point (before and after) |
 
-- **Before :** The advice gets executed before the join-point.
-- **After Returning :** The advice gets executed after the execution of the join-point finishes.
-- **After Throwing :** The advice gets executed if any exception is thrown from the join-point.
-- **After :** The advice gets executed after the execution of the join-point whether it throws an exception or not.
-- **Around :** The advice gets executed around the join-point, which means that it is invoked before the join-point and after the execution of the join-point.
+### Pointcut
 
-### PointCut
+A **Pointcut** is an expression used to identify where advices should be applied. It determines exactly which methods of Spring beans need the advice.
 
-Pointcut represents an expression used to identify in which places advices should be associated
-
-It is used to determine exactly for which methods of Spring beans advice needs to be applied.
-
-It has the following syntax:
+**Syntax:**
 
 ```java
-execution(<modifiers> <return-type> <fully qualified class name>.<method-name>(parameters))
+execution(<modifiers> <return-type> <fully-qualified-class-name>.<method-name>(parameters))
 ```
 
-execution : It is called as pointcut designator, It tells spring that joint point is execution of matching method
+**Components:**
 
-<modifiers> : It determines the access specifier of matching method.It could either be public, protected, or private. It is not mandatory.
+- `execution` - Pointcut designator (tells Spring the join point is method execution)
+- `<modifiers>` - Access specifier (public, protected, private) - *Optional*
+- `<return-type>` - Return type of the method - *Mandatory* (use `*` for any)
+- `<fully-qualified-class-name>` - Full class name - *Optional* (use `*` as wildcard)
+- `<method-name>` - Method name - *Mandatory* (use `*` as wildcard)
+- `parameters` - Method parameters (use `..` to match any parameters)
 
-<return-type> : It determines the return type of the method in order for a join point to be matched. It is mandatory. If the return type doesn't matter wildcard * is used.
+**Common Pointcut Examples:**
 
-<fully qualified class name> :  specifies the fully qualified name of the class which has methods on the execution of which advice gets executed. It is optional. You can also use * wildcard as name or part of a name.
+| Pointcut Expression | Description |
+|---------------------|-------------|
+| `execution(public * *(..))` | Any public method |
+| `execution(* service*(..))` | Any method with name beginning with "service" |
+| `execution(* com.infy.service.*.*(..))` | Any method in the `com.infy.service` package |
+| `execution(* com.infy.service.CustomerServiceImpl.*(..))` | Any method in `CustomerServiceImpl` class |
+| `execution(public * com.infy.repository.CustomerRepository.*(..))` | Any public method in `CustomerRepository` |
+| `execution(public String com.infy.repository.CustomerRepository.*(..))` | Any public method in `CustomerRepository` that returns a String |
 
-<method-name> specifies the name of the method on the execution of which advice gets executed. It is mandatory. You can also use * wildcard as name or part of a name.
-
-parameters are used for matching parameters. To skip parameter filtering, use two dots .. as parameters.
-
-| Pointcut | Description |
-|----------|-------------|
-| execution(public * *(..)) | execution of any public method |
-| execution(* service*(..)) | execution of any method with a name beginning with "service" |
-| execution(* com.infy.service.*.*(..)) | execution of any method defined in the com.infy.service package |
-| execution(* com.infy.service.CustomerServiceImpl.*(..)) | execution of any method defined in CustomerServiceImpl of com.infy.service package |
-| execution(public * com.infy.repository.CustomerRepository.*(..)) | execution of any public method in CustomerRepository of com.infy.repository package |
-| execution(public String com.infy.repository.CustomerRepository.*(..)) | execution of all public method in CustomerRepository of com.infy.repository package that returns a String |
+---
 
 ## Setup
 
-To use Spring AOP and AspectJ in Spring Boot project you have to add spring-boot-starter-aop starter in pom.xml file as follows:
+To use Spring AOP and AspectJ in a Spring Boot project, add the following dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -92,57 +122,58 @@ To use Spring AOP and AspectJ in Spring Boot project you have to add spring-boot
 </dependency>
 ```
 
-This starter adds following key dependencies:
+This starter includes:
+- **Spring AOP** - Provides basic AOP capabilities
+- **AspectJ** - Provides a complete AOP framework
 
-- Spring AOP which provides basic AOP capabilities
-- AspectJ which provides a complete AOP framework
+---
 
-## Around Advice
+## Types of Advice
 
-It executed around the join point, i.e before and after the execution of the target method
+### Around Advice
 
-It is declared using @Around annotation
+**Around advice** executes before and after the join point, giving you complete control over method execution.
 
-You can perform custom logic before and after the method invocation, and you can even decide whether to proceed with the method execution or skip it altogether.
+**Key Features:**
+- Can perform custom logic before and after method invocation
+- Can decide whether to proceed with method execution or skip it
+- Can modify method behavior
 
-This is powerful because it gives you the ability to modify the method's behavior.
+**Annotation:** `@Around`
+
+**Example:**
 
 ```java
 public class MathService {
-
     public double divide(int numerator, int denominator) {
         return numerator / denominator;
     }
 }
 
-
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-
+@Component
 @Aspect
 public class LoggingAspect {
 
     @Around("execution(* com.example.service.MathService.divide(..))")
     public Object logAndHandleDivision(ProceedingJoinPoint joinPoint) throws Throwable {
-        // Before the method execution
+        // Before method execution
         System.out.println("Before method execution: Logging...");
 
-        // Accessing method arguments
+        // Access method arguments
         Object[] methodArgs = joinPoint.getArgs();
         int numerator = (int) methodArgs[0];
         int denominator = (int) methodArgs[1];
 
-        // Handling division by zero
+        // Custom validation logic
         if (denominator == 0) {
             System.out.println("Denominator is zero. Cannot divide.");
-            return Double.NaN; // Returning a special value for division by zero
+            return Double.NaN; // Return special value for division by zero
         }
 
-        // Proceeding with the method execution
+        // Proceed with method execution
         Object result = joinPoint.proceed();
 
-        // After the method execution
+        // After method execution
         System.out.println("After method execution: Logging...");
 
         return result;
@@ -150,30 +181,24 @@ public class LoggingAspect {
 }
 ```
 
-In The Above Example, The @Around annotation indicates that this is an "around advice."
+---
 
-The advice method logAndHandleDivision takes a ProceedingJoinPoint parameter, which allows you to control the method execution.
+### Before Advice
 
-Before the actual method (divide) is executed, you can perform custom logic (logging in this case).
+**Before advice** executes custom logic before a method is invoked. Commonly used for logging or validation.
 
-You can access the method arguments using joinPoint.getArgs() and modify them if needed.
+**Key Features:**
+- Executes before the target method
+- Cannot modify method input or output
+- Cannot prevent method execution
 
-You can choose to proceed with the method execution using joinPoint.proceed() or skip it based on some conditions.
+**Annotation:** `@Before`
 
-After the method execution, you can perform additional actions.
+**Example:**
 
-This is a powerful way to wrap custom logic around a method, providing a centralized way to handle common concerns.
-
-## Before Advice
-
-"before advice" is a type of advice that allows you to execute custom logic before a method is invoked. It provides a way to perform actions, such as logging or validation, prior to the actual execution of the target method.
-
-Keep in mind that while "before advice" is useful for tasks like logging, it doesn't allow you to modify the method's input or output.
-
-```java 
-@component
+```java
+@Component
 public class Calculator {
-
     public int add(int a, int b) {
         return a + b;
     }
@@ -183,43 +208,42 @@ public class Calculator {
     }
 }
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-
-@component
+@Component
 @Aspect
 public class LoggingAspect {
 
     @Before("execution(* com.example.Calculator.*(..))")
     public void logBeforeMethodExecution(JoinPoint joinPoint) {
-        System.out.println("Before method execution: Logging..."+joinPoint.getSignature());
+        System.out.println("Before method execution: Logging..." + joinPoint.getSignature());
     }
 }
 ```
 
-The @Before annotation indicates that this is a "before advice."
+**Output:** Every time a method in the `Calculator` class is invoked, the logging message will be printed before the method executes.
 
-The advice method logBeforeMethodExecution is executed before any method in the Calculator class (execution(* com.example.Calculator.*(..)).
+---
 
-When you run your application with Spring AOP configured, every time a method in the Calculator class is invoked, the "Before method execution: Logging..." message will be printed to the console.
+### After Advice
 
-## After Advice
+**After advice** executes after the join point completes, regardless of whether it throws an exception or not. Commonly used for resource cleanup.
 
-This advice is declared using @After annotation. It is executed after the execution of the actual method(fetchCustomer), even if it throws an exception during execution. It is commonly used for resource cleanup such as temporary files or closing database connections. The following is an example of this advice:
+**Key Features:**
+- Executes after method completion (success or failure)
+- Useful for cleanup tasks (closing connections, deleting temp files)
+- Cannot access the return value
+
+**Annotation:** `@After`
+
+**Example:**
 
 ```java
 public class MessagingService {
-
     public void sendMessage(String message) {
-        // Code to send the message
         System.out.println("Message sent: " + message);
     }
 }
 
-
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-
+@Component
 @Aspect
 public class LoggingAspect {
 
@@ -230,24 +254,25 @@ public class LoggingAspect {
 }
 ```
 
-The @After annotation indicates that this is an "after advice."
+---
 
-The advice method logAfterMessageSent is executed after the sendMessage method in the MessagingService class.
+### After Returning Advice
 
-This can be helpful when you want to perform actions based on the specific method that was intercepted or inspect the arguments passed to that method.
+**After returning advice** executes after a join point completes successfully (without throwing an exception).
 
-## After Returning Advice
+**Key Features:**
+- Executes only on successful method completion
+- Can access the return value
+- Does not execute if an exception is thrown
 
-This advice is declared using @AfterReturning annotation. It gets executed after joinpoint finishes its execution.
+**Annotation:** `@AfterReturning`
 
-f the target method throws an exception the advice is not executed
+**Example:**
 
 ```java
 public class Calculator {
-
     public int add(int a, int b) {
-        int result = a + b;
-        return result;
+        return a + b;
     }
 
     public int divide(int numerator, int denominator) {
@@ -258,9 +283,7 @@ public class Calculator {
     }
 }
 
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-
+@Component
 @Aspect
 public class LoggingAspect {
 
@@ -269,44 +292,37 @@ public class LoggingAspect {
             returning = "result")
     public void logAfterMethodExecution(Object result) {
         System.out.println("After method execution: Logging...");
-
-        // Accessing the result returned by the intercepted method
         System.out.println("Method result: " + result);
     }
 }
 ```
 
-The @AfterReturning annotation indicates that this is an "after returning advice."
-
-The pointcut expression targets all methods in the Calculator class (execution(* com.example.Calculator.*(..)).
-
-The returning attribute specifies the name of the parameter in the advice method (result) that will receive the value returned by the intercepted method.
-
-When you run your application with Spring AOP configured, every time a method in the Calculator class is invoked, and it successfully returns a result, the "After method execution: Logging..." message will be printed to the console, along with the result returned by the method.
+**Alternative (without accessing result):**
 
 ```java
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-
-@Aspect
-public class LoggingAspect {
-
-    @AfterReturning("execution(* com.example.Calculator.*(..))")
-    public void logAfterMethodExecution(JoinPoint joinPoint) {
-        System.out.println("After method execution: Logging..."+joinPoint.getSignature());
-    }
+@AfterReturning("execution(* com.example.Calculator.*(..))")
+public void logAfterMethodExecution(JoinPoint joinPoint) {
+    System.out.println("After method execution: Logging..." + joinPoint.getSignature());
 }
 ```
 
-## AfterThrowing Advice
+---
 
-This advice is defined using @AfterThrowing annotation. It gets executed after an exception is thrown from the target method.
+### After Throwing Advice
 
-This allows you to handle or log exceptions in a centralized way without modifying the original method.
+**After throwing advice** executes when a method throws an exception. Allows centralized exception handling without modifying the original method.
+
+**Key Features:**
+- Executes only when an exception is thrown
+- Can access the thrown exception
+- Useful for logging, notifications, or custom error handling
+
+**Annotation:** `@AfterThrowing`
+
+**Example:**
 
 ```java
 public class BankAccount {
-
     private double balance;
 
     public BankAccount(double balance) {
@@ -322,10 +338,8 @@ public class BankAccount {
     }
 }
 
-
-import org.aspectj.lang.AfterThrowing;
-import org.aspectj.lang.JoinPoint;
-
+@Component
+@Aspect
 public class ExceptionHandlingAspect {
 
     @AfterThrowing(
@@ -333,50 +347,36 @@ public class ExceptionHandlingAspect {
             throwing = "exception")
     public void handleInsufficientFunds(JoinPoint joinPoint, InsufficientFundsException exception) {
         System.out.println("Exception occurred: " + exception.getMessage());
-
-        // Additional handling logic can be added here, e.g., sending an email, logging, etc.
+        // Additional handling: send email, log to database, etc.
     }
 }
 ```
 
-The @AfterThrowing annotation indicates that this is an "after throwing advice."
-
-The pointcut expression targets the withdraw method in the BankAccount class with a double parameter.
-
-The throwing attribute specifies the name of the parameter in the advice method (exception) that will receive the thrown exception.
-
-Now, when you run your application and attempt to withdraw an amount greater than the balance, the aspect will catch the InsufficientFundsException and execute the handleInsufficientFunds advice, logging the exception message.
-
-We can also use any advice without argument
+**Generic Exception Handling (all methods):**
 
 ```java
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-
-@Aspect
-public class ExceptionHandlingAspect {
-
-    @AfterThrowing("execution(* *(..))")
-    public void handleException(JoinPoint joinPoint) {
-        System.out.println("Exception occurred in method: " + joinPoint.getSignature().getName());
-
-        // Additional handling logic can be added here, e.g., sending an email, logging, etc.
-    }
+@AfterThrowing("execution(* *(..))")
+public void handleException(JoinPoint joinPoint) {
+    System.out.println("Exception occurred in method: " + joinPoint.getSignature().getName());
+    // Additional handling logic
 }
 ```
 
-## @Pointcut Annotation
+---
 
-The @Pointcut annotation in Spring AOP is used to define a reusable pointcut expression, which is a set of join points where advice should be applied.
+## Reusable Pointcuts
 
-It allows you to name and reuse a specific pointcut expression across multiple advice methods. This helps in keeping your code modular and avoids redundancy by centralizing the pointcut definitions.
+The `@Pointcut` annotation allows you to define reusable pointcut expressions, avoiding redundancy and centralizing pointcut definitions.
+
+**Benefits:**
+- Define once, use multiple times
+- Keeps code modular and maintainable
+- Easier to update pointcut logic
+
+**Example:**
 
 ```java
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-
+@Component
 @Aspect
 public class LoggingAspect {
 
@@ -384,13 +384,13 @@ public class LoggingAspect {
     @Pointcut("execution(* com.example.MyService.*(..))")
     public void serviceMethods() {}
 
-    // Advice applied to methods matching the pointcut expression
+    // Advice using the reusable pointcut
     @Before("serviceMethods()")
     public void logBeforeServiceMethods() {
         System.out.println("Before service method execution: Logging...");
     }
 
-    // Another advice using the same pointcut expression
+    // Another advice using the same pointcut
     @Before("serviceMethods()")
     public void additionalActionBeforeServiceMethods() {
         System.out.println("Before service method execution: Additional action...");
@@ -398,8 +398,20 @@ public class LoggingAspect {
 }
 ```
 
-The @Pointcut annotation is used to define a pointcut expression named serviceMethods().
+**How it works:**
+1. The `@Pointcut` annotation defines a named pointcut expression (`serviceMethods()`)
+2. Multiple advice methods reference this pointcut by name
+3. Changes to the pointcut expression only need to be made in one place
 
-The pointcut expression is specified as execution(* com.example.MyService.*(..)), which captures all methods in the MyService class.
+---
 
-Two @Before advices use the serviceMethods() pointcut expression. This means that the advice logic will be applied to all methods matching the pointcut expression.
+## Summary
+
+Spring AOP provides a powerful way to modularize cross-cutting concerns in your application:
+
+- **Aspects** encapsulate cross-cutting logic
+- **Join Points** define where the logic can be applied
+- **Advice** contains the actual implementation
+- **Pointcuts** specify which join points should trigger the advice
+
+By using AOP, you can keep your business logic clean and separate common concerns like logging, security, and error handling into dedicated aspects.
